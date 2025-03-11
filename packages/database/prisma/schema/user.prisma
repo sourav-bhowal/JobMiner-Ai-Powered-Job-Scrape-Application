@@ -1,0 +1,28 @@
+model User {
+    id String @id @default(cuid())
+
+    // Auth
+    username      String  @unique
+    email         String  @unique
+    password      String
+    emailVerified Boolean @default(false)
+
+    // Profile
+    firstName String?
+    lastName  String?
+    avatar    String?
+    bio       String?
+    location  String?
+    website   String?
+    resume    String?
+    linkedin  String?
+    github    String?
+    twitter   String?
+
+    // Preferences
+    jobPreferences JobPreferences?
+
+    // Date & Time
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
