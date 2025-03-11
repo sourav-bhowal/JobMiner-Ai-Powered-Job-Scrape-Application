@@ -1,0 +1,21 @@
+{
+  "name": "@repo/validations",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./auth-validation": "./src/auth-validation.ts",
+    "./user-validation": "./src/user-validation.ts",
+    "./job-preference-validation": "./src/job-preference-validation.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@repo/typescript-config": "*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  }
+}

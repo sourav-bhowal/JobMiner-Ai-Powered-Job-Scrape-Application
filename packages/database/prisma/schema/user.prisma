@@ -12,11 +12,13 @@ model User {
     lastName  String?
     avatar    String?
     bio       String?
-    location  String?
+    city      String?
+    state     String?
+    country   String?
     website   String?
     resume    String?
-    linkedin  String?
-    github    String?
+    linkedIn  String?
+    gitHub    String?
     twitter   String?
 
     // Preferences

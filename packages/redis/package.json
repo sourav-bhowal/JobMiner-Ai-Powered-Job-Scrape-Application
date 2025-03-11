@@ -1,0 +1,20 @@
+{
+  "name": "@repo/redis",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@repo/typescript-config": "*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ioredis": "^5.6.0"
+  },
+  "exports": {
+    "./redis": "./index.ts"
+  }
+}
