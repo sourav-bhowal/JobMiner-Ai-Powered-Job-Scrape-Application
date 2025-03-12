@@ -161,9 +161,17 @@ export const getUser = asyncHandler(
 export const resetPassword = asyncHandler(
   async (request: Request, response: Response) => {
     // Validate request body
-    const { oldPassword, newPassword } = resetPasswordSchema.parse(
+    const { error, success, data } = resetPasswordSchema.safeParse(
       request.body
     );
+
+    // If validation fails, throw an error
+    if (!success) {
+      throw new apiError(400, error.errors[0].message);
+    }
+
+    // Destructure request body
+    const { oldPassword, newPassword } = data;
 
     // Get user from Db
     const user = await prisma.user.findUnique({
@@ -208,6 +216,14 @@ export const resetPassword = asyncHandler(
 export const updateUser = asyncHandler(
   async (request: Request, response: Response) => {
     // Validate request body
+    const { error, success, data } = updateUserSchema.safeParse(request.body);
+
+    // If validation fails, throw an error
+    if (!success) {
+      throw new apiError(400, error.errors[0].message);
+    }
+
+    // Deconstruct request body
     const {
       firstName,
       lastName,
@@ -220,7 +236,7 @@ export const updateUser = asyncHandler(
       linkedIn,
       gitHub,
       twitter,
-    } = updateUserSchema.parse(request.body);
+    } = data;
 
     // Get user from Db
     const user = await prisma.user.findUnique({
