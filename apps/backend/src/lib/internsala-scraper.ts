@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import openai from "@repo/openai";
+import { openai } from "@repo/openai";
 
 // Function to chunk text before sending to OpenAI
 export function chunkText(text: string, maxBytes = 9000) {

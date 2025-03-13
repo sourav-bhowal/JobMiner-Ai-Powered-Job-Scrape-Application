@@ -10,7 +10,5 @@ dotenv.config({ path: envPath });
 const apiKey = process.env.OPENAI_API_KEY;
 
 // Create an instance of the OpenAI class
-const openai = new OpenAI({ apiKey });
+export const openai = new OpenAI({ apiKey });
 
-// Export the instance
-export default openai;

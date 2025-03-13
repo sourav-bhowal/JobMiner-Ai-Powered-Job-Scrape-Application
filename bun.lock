@@ -77,7 +77,7 @@
         "typescript-eslint": "^8.26.0",
       },
     },
-    "packages/open-ai": {
+    "packages/openAI": {
       "name": "@repo/openai",
       "dependencies": {
         "dotenv": "^16.4.7",
@@ -295,7 +295,7 @@
 
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
 
-    "@repo/openai": ["@repo/openai@workspace:packages/open-ai"],
+    "@repo/openai": ["@repo/openai@workspace:packages/openAI"],
 
     "@repo/redis": ["@repo/redis@workspace:packages/redis"],
 
