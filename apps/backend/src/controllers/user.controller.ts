@@ -2,9 +2,9 @@
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import asyncHandler from "../utils/asyncHandler";
-import apiResponse from "../utils/apiResponse";
-import apiError from "../utils/apiError";
+import asyncHandler from "../utils/asyncHandler.js";
+import apiResponse from "../utils/apiResponse.js";
+import apiError from "../utils/apiError.js";
 import prisma from "@repo/database/prisma";
 import { signInSchema, signUpSchema } from "@repo/validations/auth-validation";
 import {
@@ -20,7 +20,7 @@ export const signUpUser = asyncHandler(
 
     // If validation fails, throw an error
     if (!success) {
-      throw new apiError(400, error.errors[0].message);
+      throw new apiError(400, error?.errors[0]?.message);
     }
 
     // Destructure request body
@@ -77,6 +77,11 @@ export const signUpUser = asyncHandler(
       new apiResponse(
         201,
         {
+          user: {
+            id: newUser.id,
+            email: newUser.email,
+            username: newUser.username,
+          },
           accessToken: token,
         },
         "User created successfully."
@@ -93,7 +98,7 @@ export const signInUser = asyncHandler(
 
     // If validation fails, throw an error
     if (!success) {
-      throw new apiError(400, error.errors[0].message);
+      throw new apiError(400, error?.errors[0]?.message);
     }
 
     // Destructure request body
@@ -136,6 +141,11 @@ export const signInUser = asyncHandler(
       new apiResponse(
         200,
         {
+          user: {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+          },
           accessToken: token,
         },
         "User signed in successfully."
@@ -167,7 +177,7 @@ export const resetPassword = asyncHandler(
 
     // If validation fails, throw an error
     if (!success) {
-      throw new apiError(400, error.errors[0].message);
+      throw new apiError(400, error?.errors[0]?.message);
     }
 
     // Destructure request body
@@ -220,7 +230,7 @@ export const updateUser = asyncHandler(
 
     // If validation fails, throw an error
     if (!success) {
-      throw new apiError(400, error.errors[0].message);
+      throw new apiError(400, error?.errors[0]?.message);
     }
 
     // Deconstruct request body

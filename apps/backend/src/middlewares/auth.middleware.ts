@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import apiError from "../utils/apiError";
+import apiError from "../utils/apiError.js";
 
 // Middleware to check if the user is authenticated
 export const authMiddleware = (
