@@ -38,6 +38,7 @@
     "apps/websocket": {
       "name": "websocket",
       "devDependencies": {
+        "@repo/typescript-config": "*",
         "@types/bun": "latest",
       },
       "peerDependencies": {
@@ -82,6 +83,16 @@
         "dotenv": "^16.4.7",
         "openai": "^4.87.3",
       },
+      "devDependencies": {
+        "@repo/typescript-config": "*",
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
+      },
+    },
+    "packages/rabbitMQ": {
+      "name": "rabbitmq",
       "devDependencies": {
         "@repo/typescript-config": "*",
         "@types/bun": "latest",
@@ -1211,6 +1222,8 @@
     "qs": ["qs@6.13.0", "", { "dependencies": { "side-channel": "^1.0.6" } }, "sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg=="],
 
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
+
+    "rabbitmq": ["rabbitmq@workspace:packages/rabbitMQ"],
 
     "range-parser": ["range-parser@1.2.1", "", {}, "sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg=="],
 
