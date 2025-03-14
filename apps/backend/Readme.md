@@ -26,8 +26,7 @@ Success Response:
       "id": "string",
       "email": "string",
       "username": "string"
-    },
-    "accessToken": "jwt-token"
+    }
   },
   "message": "User created successfully."
 }
