@@ -59,28 +59,6 @@ export const signUpUser = asyncHandler(
       throw new apiError(400, "User could not be created.");
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        userId: newUser.id,
-        email: newUser.email,
-        username: newUser.username,
-      },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: "7d",
-        algorithm: "HS256",
-      }
-    );
-
-    // Set cookie
-    response.cookie("accessToken", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 604800000, // 7 days
-    });
-
     // Send response
     response.status(201).json(
       new apiResponse(
@@ -91,7 +69,6 @@ export const signUpUser = asyncHandler(
             email: newUser.email,
             username: newUser.username,
           },
-          accessToken: token,
         },
         "User created successfully."
       )
