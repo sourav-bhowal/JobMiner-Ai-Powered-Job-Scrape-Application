@@ -11,6 +11,7 @@ import {
   resetPasswordSchema,
   updateUserSchema,
 } from "@repo/validations/user-validation";
+import { updateJobPreferencesSchema } from "@repo/validations/job-preference-validation";
 
 // Sign Up Controller
 export const signUpUser = asyncHandler(
@@ -329,5 +330,65 @@ export const deleteUser = asyncHandler(
     response
       .status(200)
       .json(new apiResponse(200, null, "User deleted successfully."));
+  }
+);
+
+// Update User Job Preferences Controller
+export const updateUserJobPreferences = asyncHandler(
+  async (request: Request, response: Response) => {
+    // Get the user from the request body
+    const { error, success, data } = updateJobPreferencesSchema.safeParse(
+      request.body
+    );
+
+    // If validation fails, throw an error
+    if (!success) {
+      throw new apiError(400, error?.errors[0]?.message);
+    }
+
+    // Get user from request object
+    const { jobTypes, remote, keywords, location } = data;
+
+    // Get user from Db
+    const user = await prisma.user.findUnique({
+      where: { id: request.user.id },
+    });
+
+    // If user does not exist, throw an error
+    if (!user) {
+      throw new apiError(400, "User does not exist.");
+    }
+
+    // If logged in user is not the same as the user to be updated, throw an error
+    if (user.id !== request.user.id) {
+      throw new apiError(401, "Unauthorized. You are not allowed to do this.");
+    }
+
+    // Update user job preferences
+    const updatedJobPreferences = await prisma.jobPreferences.update({
+      where: { userId: user.id },
+      data: {
+        jobTypes,
+        remote,
+        keywords,
+        location,
+      },
+    });
+
+    // If job preferences are not updated, throw an error
+    if (!updatedJobPreferences) {
+      throw new apiError(400, "Job preferences could not be updated.");
+    }
+
+    // Send response
+    response
+      .status(200)
+      .json(
+        new apiResponse(
+          200,
+          { jobPreferences: updatedJobPreferences },
+          "Job preferences updated successfully."
+        )
+      );
   }
 );
