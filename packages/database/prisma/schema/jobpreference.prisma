@@ -12,6 +12,8 @@ model JobPreferences {
     // Date & Time
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@map("job_preferences")
 }
 
 // Job Type Enum

@@ -3,10 +3,12 @@ import { Router } from "express";
 import {
   signInUser,
   signUpUser,
-  getUser,
   updateUser,
   resetPassword,
   deleteUser,
+  getUserProfile,
+  updateUserJobPreferences,
+  signOutUser,
 } from "../controllers/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
@@ -25,9 +27,19 @@ userRouter.post("/reset-password", authMiddleware, resetPassword);
 // GET, PUT, DELETE /api/user
 userRouter
   .route("/")
-  .get(authMiddleware, getUser)
+  .get(authMiddleware, getUserProfile)
   .put(authMiddleware, updateUser)
   .delete(authMiddleware, deleteUser);
+
+// POST /api/user/update-job-preferences
+userRouter.post(
+  "/update-job-preferences",
+  authMiddleware,
+  updateUserJobPreferences
+);
+
+// POST /api/user/signout
+userRouter.post("/signout", authMiddleware, signOutUser);
 
 // Export the router
 export default userRouter;

@@ -1,5 +1,6 @@
 import express, { type Application } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import userRouter from "./src/routes/user.routes.js";
 
 // Create a new express application
@@ -20,6 +21,9 @@ app.use(express.json({ limit: "50mb" }));
 
 // Add urlencoded body parser middleware
 app.use(express.urlencoded({ extended: true }));
+
+// Add cookie parser middleware
+app.use(cookieParser());
 
 // Add the user router
 app.use("/api/user", userRouter);

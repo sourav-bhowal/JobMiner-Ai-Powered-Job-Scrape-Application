@@ -73,6 +73,14 @@ export const signUpUser = asyncHandler(
       }
     );
 
+    // Set cookie
+    response.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 604800000, // 7 days
+    });
+
     // Send response
     response.status(201).json(
       new apiResponse(
@@ -137,6 +145,14 @@ export const signInUser = asyncHandler(
       }
     );
 
+    // Set cookie
+    response.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 604800000, // 7 days
+    });
+
     // Send response
     response.status(200).json(
       new apiResponse(
@@ -155,11 +171,21 @@ export const signInUser = asyncHandler(
   }
 );
 
-// Get User Controller
-export const getUser = asyncHandler(
+// Get User Profile Controller
+export const getUserProfile = asyncHandler(
   async (request: Request, response: Response) => {
-    // Get user from request object
-    const user = request.user;
+    // Get user from Db
+    const user = await prisma.user.findUnique({
+      where: { id: request.user.id },
+      include: {
+        jobPreferences: true,
+      },
+    });
+
+    // If user does not exist, throw an error
+    if (!user) {
+      throw new apiError(400, "User does not exist.");
+    }
 
     // Send response
     response
@@ -192,11 +218,6 @@ export const resetPassword = asyncHandler(
     // If user does not exist, throw an error
     if (!user) {
       throw new apiError(400, "User does not exist.");
-    }
-
-    // If logged in user is not the same as the user to be updated, throw an error
-    if (user.id !== request.user.id) {
-      throw new apiError(401, "Unauthorized. You are not allowed to do this.");
     }
 
     // Compare passwords
@@ -259,11 +280,6 @@ export const updateUser = asyncHandler(
       throw new apiError(400, "User does not exist.");
     }
 
-    // If logged in user is not the same as the user to be updated, throw an error
-    if (user.id !== request.user.id) {
-      throw new apiError(401, "Unauthorized. You are not allowed to do this.");
-    }
-
     // Update user
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
@@ -303,36 +319,6 @@ export const updateUser = asyncHandler(
   }
 );
 
-// Delete User Controller
-export const deleteUser = asyncHandler(
-  async (request: Request, response: Response) => {
-    // Get user from Db
-    const user = await prisma.user.findUnique({
-      where: { id: request.user.id },
-    });
-
-    // If user does not exist, throw an error
-    if (!user) {
-      throw new apiError(400, "User does not exist.");
-    }
-
-    // If logged in user is not the same as the user to be updated, throw an error
-    if (user.id !== request.user.id) {
-      throw new apiError(401, "Unauthorized. You are not allowed to do this.");
-    }
-
-    // Delete user
-    await prisma.user.delete({
-      where: { id: user.id },
-    });
-
-    // Send response
-    response
-      .status(200)
-      .json(new apiResponse(200, null, "User deleted successfully."));
-  }
-);
-
 // Update User Job Preferences Controller
 export const updateUserJobPreferences = asyncHandler(
   async (request: Request, response: Response) => {
@@ -352,6 +338,9 @@ export const updateUserJobPreferences = asyncHandler(
     // Get user from Db
     const user = await prisma.user.findUnique({
       where: { id: request.user.id },
+      include: {
+        jobPreferences: true,
+      },
     });
 
     // If user does not exist, throw an error
@@ -359,36 +348,95 @@ export const updateUserJobPreferences = asyncHandler(
       throw new apiError(400, "User does not exist.");
     }
 
-    // If logged in user is not the same as the user to be updated, throw an error
-    if (user.id !== request.user.id) {
-      throw new apiError(401, "Unauthorized. You are not allowed to do this.");
-    }
-
-    // Update user job preferences
-    const updatedJobPreferences = await prisma.jobPreferences.update({
-      where: { userId: user.id },
-      data: {
-        jobTypes,
-        remote,
-        keywords,
-        location,
-      },
-    });
-
-    // If job preferences are not updated, throw an error
-    if (!updatedJobPreferences) {
-      throw new apiError(400, "Job preferences could not be updated.");
+    // If user job preferences exist, update them
+    if (user.jobPreferences) {
+      await prisma.jobPreferences.update({
+        where: { id: user.jobPreferences.id },
+        data: {
+          jobTypes,
+          remote,
+          keywords,
+          location,
+        },
+      });
+    } else {
+      // If user job preferences do not exist, create them
+      await prisma.jobPreferences.create({
+        data: {
+          userId: user.id,
+          jobTypes,
+          remote,
+          keywords,
+          location,
+        },
+      });
     }
 
     // Send response
     response
       .status(200)
       .json(
-        new apiResponse(
-          200,
-          { jobPreferences: updatedJobPreferences },
-          "Job preferences updated successfully."
-        )
+        new apiResponse(200, null, "User job preferences updated successfully.")
       );
+  }
+);
+
+// Delete User Controller
+export const deleteUser = asyncHandler(
+  async (request: Request, response: Response) => {
+    // Get user from Db
+    const user = await prisma.user.findUnique({
+      where: { id: request.user.id },
+    });
+
+    // If user does not exist, throw an error
+    if (!user) {
+      throw new apiError(400, "User does not exist.");
+    }
+
+    // Delete user
+    await prisma.user.delete({
+      where: { id: user.id },
+    });
+
+    // Send response
+    response
+      .status(200)
+      .json(new apiResponse(200, null, "User deleted successfully."));
+  }
+);
+
+// Sign Out User Controller
+export const signOutUser = asyncHandler(
+  async (request: Request, response: Response) => {
+    // Clear cookie
+    response.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    // Get the token from the headers or cookies
+    const token =
+      request.cookies.accessToken ||
+      request.headers.authorization?.split(" ")[1];
+
+    // If token is not present, throw an error
+    if (!token) {
+      throw new apiError(400, "No token provided.");
+    }
+
+    // If token is present, blacklist it
+    await prisma.blacklistedToken.create({
+      data: {
+        token,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      },
+    });
+
+    // Send response
+    response
+      .status(200)
+      .json(new apiResponse(200, null, "User signed out successfully."));
   }
 );

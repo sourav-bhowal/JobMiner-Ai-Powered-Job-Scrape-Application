@@ -4,12 +4,13 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest",
     "@repo/database": "*",
-    "@repo/redis": "*",
-    "@repo/validations": "*",
     "@repo/openai": "*",
-    "@repo/typescript-config": "*"
+    "@repo/redis": "*",
+    "@repo/typescript-config": "*",
+    "@repo/validations": "*",
+    "@types/bun": "latest",
+    "@types/cookie-parser": "^1.4.8"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -20,6 +21,7 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
