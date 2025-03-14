@@ -21,13 +21,7 @@ Success Response:
 ```
 {
   "status": 201,
-  "data": {
-    "user": {
-      "id": "string",
-      "email": "string",
-      "username": "string"
-    }
-  },
+  "data": null,
   "message": "User created successfully."
 }
 ```
@@ -86,3 +80,4 @@ Success Response:
   "message": "Password reset successfully."
 }
 ```
+

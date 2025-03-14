@@ -12,6 +12,7 @@ import {
   updateUserSchema,
 } from "@repo/validations/user-validation";
 import { updateJobPreferencesSchema } from "@repo/validations/job-preference-validation";
+import { sendWelcomeEmail } from "@repo/email";
 
 // Sign Up Controller
 export const signUpUser = asyncHandler(
@@ -59,20 +60,18 @@ export const signUpUser = asyncHandler(
       throw new apiError(400, "User could not be created.");
     }
 
+    // Send welcome email
+    const mailSend = await sendWelcomeEmail(newUser.email, newUser.username);
+
+    // If email is not sent, throw an error
+    if (!mailSend) {
+      throw new apiError(400, "Welcome email could not be sent.");
+    }
+
     // Send response
-    response.status(201).json(
-      new apiResponse(
-        201,
-        {
-          user: {
-            id: newUser.id,
-            email: newUser.email,
-            username: newUser.username,
-          },
-        },
-        "User created successfully."
-      )
-    );
+    response
+      .status(201)
+      .json(new apiResponse(201, null, "User created successfully."));
   }
 );
 

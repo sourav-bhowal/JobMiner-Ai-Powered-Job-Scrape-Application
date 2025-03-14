@@ -9,6 +9,7 @@
     "@repo/redis": "*",
     "@repo/typescript-config": "*",
     "@repo/validations": "*",
+    "@repo/email": "*",
     "@types/bun": "latest",
     "@types/cookie-parser": "^1.4.8"
   },
