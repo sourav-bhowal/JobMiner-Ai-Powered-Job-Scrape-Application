@@ -61,7 +61,10 @@ export const signUpUser = asyncHandler(
     }
 
     // Send welcome email
-    const mailSend = await sendWelcomeEmail(newUser.email, newUser.username);
+    const mailSend = await sendWelcomeEmail({
+      email: newUser.email,
+      username: newUser.username,
+    });
 
     // If email is not sent, throw an error
     if (!mailSend) {
