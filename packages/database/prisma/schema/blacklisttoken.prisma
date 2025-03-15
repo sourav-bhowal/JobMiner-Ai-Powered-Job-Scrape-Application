@@ -4,5 +4,6 @@ model BlacklistedToken {
     expiresAt DateTime
     createdAt DateTime @default(now())
 
+    @@index([expiresAt])
     @@map("blacklisted_tokens")
 }

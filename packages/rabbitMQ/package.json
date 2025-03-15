@@ -1,5 +1,5 @@
 {
-  "name": "rabbitmq",
+  "name": "@repo/rabbitmq",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -9,5 +9,10 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/amqplib": "^0.10.7",
+    "amqplib": "^0.10.5",
+    "dotenv": "^16.4.7"
   }
 }
