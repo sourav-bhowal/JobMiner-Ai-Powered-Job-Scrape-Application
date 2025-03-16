@@ -17,8 +17,11 @@ export const sendJobsToQueue = async (jobs: Job[]): Promise<void> => {
 
   // Send jobs to the queue in batches
   for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
-    const batch = jobs.slice(i, i + BATCH_SIZE); // Get a batch of jobs
-    const data = Buffer.from(JSON.stringify(batch)); // Convert the batch to a buffer
+    // Get a batch of jobs
+    const batch = jobs.slice(i, i + BATCH_SIZE);
+
+    // Convert the batch to a buffer
+    const data = Buffer.from(JSON.stringify(batch));
 
     // Send the batch to the queue
     channel.sendToQueue(QUEUE_NAME, data, { persistent: true });

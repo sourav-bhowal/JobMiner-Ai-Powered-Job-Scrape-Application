@@ -11,11 +11,6 @@ const RABBITMQ_URL = process.env.RABBITMQ_URL!;
 
 // Connect to RabbitMQ
 export const connectRabbitMQ = async () => {
-  // if (connection && channel) {
-  //   return { connection, channel };
-  // }
-
-  //TODO: FIX THE TYPE ISSUE
   try {
     const connection = await amqp.connect(RABBITMQ_URL);
     console.log("Connected to RabbitMQ");
@@ -28,6 +23,8 @@ export const connectRabbitMQ = async () => {
 };
 
 // ACTUAL CODE ///
+
+//TODO: FIX THE TYPE ISSUE
 
 // // Connection and channel variables
 // let connection: Connection | null = null;
