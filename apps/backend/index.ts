@@ -2,10 +2,7 @@ import express, { type Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRouter from "./src/routes/user.routes.js";
-import {
-  startBlacklistTokenCleanup,
-  startScrapedJobCleanup,
-} from "./src/utils/cronJob.js";
+import { startBlacklistTokenCleanup } from "./src/utils/cronJob.js";
 
 // Create a new express application
 const app: Application = express();
@@ -14,8 +11,6 @@ const app: Application = express();
 if (process.env.NODE_ENV === "production") {
   // Start the cron job to cleanup the blacklist tokens
   startBlacklistTokenCleanup();
-  // Start the cron job to cleanup the old scraped jobs
-  startScrapedJobCleanup();
 }
 
 // Port to listen on

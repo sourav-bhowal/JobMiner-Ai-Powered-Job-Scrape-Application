@@ -1,22 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the `BlacklistedToken` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `JobPreferences` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "JobPreferences" DROP CONSTRAINT "JobPreferences_userId_fkey";
-
--- DropTable
-DROP TABLE "BlacklistedToken";
-
--- DropTable
-DROP TABLE "JobPreferences";
-
--- DropTable
-DROP TABLE "User";
+-- CreateEnum
+CREATE TYPE "JobType" AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP');
 
 -- CreateTable
 CREATE TABLE "blacklisted_tokens" (
@@ -40,6 +23,35 @@ CREATE TABLE "job_preferences" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "job_preferences_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "scraped_jobs" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT,
+    "companyName" TEXT,
+    "companyLink" TEXT,
+    "jobType" TEXT,
+    "responsibilities" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "skills" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "benefits" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "currency" TEXT,
+    "salaryFrequency" TEXT,
+    "minSalary" INTEGER,
+    "maxSalary" INTEGER,
+    "remote" BOOLEAN DEFAULT false,
+    "location" TEXT,
+    "description" TEXT,
+    "insights" TEXT,
+    "link" TEXT,
+    "applyLink" TEXT,
+    "applyBy" TIMESTAMP(3),
+    "postedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "scraped_jobs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -71,7 +83,13 @@ CREATE TABLE "users" (
 CREATE UNIQUE INDEX "blacklisted_tokens_token_key" ON "blacklisted_tokens"("token");
 
 -- CreateIndex
+CREATE INDEX "blacklisted_tokens_expiresAt_idx" ON "blacklisted_tokens"("expiresAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "job_preferences_userId_key" ON "job_preferences"("userId");
+
+-- CreateIndex
+CREATE INDEX "scraped_jobs_createdAt_idx" ON "scraped_jobs"("createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");

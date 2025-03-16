@@ -1,23 +1,27 @@
 model ScrapedJob {
-    id          Int       @id @default(autoincrement())
-    title       String?
-    companyName String?
-    companyLink String?
-    jobType     String?
-    minSalary   Int?
-    maxSalary   Int?
-    remote      Boolean?  @default(false)
-    location    String?
-    description String?
-    insights    String?
-    link        String?
-    applyLink   String?
-    skills      String[]  @default([])
-    tags        String[]  @default([])
-    applyBy     DateTime?
-    postedAt    DateTime?
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    id               Int       @id @default(autoincrement())
+    title            String?
+    companyName      String?
+    companyLink      String?
+    jobType          String?
+    responsibilities String[]  @default([])
+    skills           String[]  @default([])
+    tags             String[]  @default([])
+    benefits         String[]  @default([])
+    currency         String?
+    salaryFrequency  String?
+    minSalary        Int?
+    maxSalary        Int?
+    remote           Boolean?  @default(false)
+    location         String?
+    description      String?
+    insights         String?
+    link             String?
+    applyLink        String?
+    applyBy          DateTime?
+    postedAt         DateTime?
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
 
     @@index([createdAt])
     @@map("scraped_jobs")

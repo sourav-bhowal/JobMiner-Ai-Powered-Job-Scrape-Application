@@ -1,9 +1,10 @@
+// INTERNSALA SCRAPER
 import puppeteer from "puppeteer";
 import { openai } from "@repo/openai";
-import { chunkText } from "../utils/chunkText.js";
+import { chunkText } from "../lib/chunkText.js";
 
 // Main job scraping function
-export const jobScraper = async () => {
+export const internshalaJobScraper = async () => {
   // Internshala job search URL
   const JOB_SEARCH_URL = "https://internshala.com/jobs/web-development-jobs/";
 
@@ -123,6 +124,3 @@ export const jobScraper = async () => {
     await browser.close();
   }
 };
-
-// Run the job scraper function
-jobScraper();

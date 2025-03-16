@@ -1,0 +1,25 @@
+{
+  "name": "@repo/scraper",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@repo/typescript-config": "*",
+    "@repo/database": "*",
+    "@repo/rabbitmq": "*",
+    "@repo/openai": "*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.3",
+    "puppeteer": "^24.4.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.ts"
+    }
+  }
+}
