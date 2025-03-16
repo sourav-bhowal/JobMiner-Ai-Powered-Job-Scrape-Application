@@ -3,7 +3,7 @@ import puppeteer from "puppeteer";
 import { openai } from "@repo/openai";
 import { chunkText } from "../lib/chunkText.js";
 
-// Main job scraping function
+// JUST A DUMMY PRACTICE FUNCTION //
 export const internshalaJobScraper = async () => {
   // Internshala job search URL
   const JOB_SEARCH_URL = "https://internshala.com/jobs/web-development-jobs/";
