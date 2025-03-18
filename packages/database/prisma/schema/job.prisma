@@ -1,6 +1,6 @@
-model ScrapedJob {
+model Job {
     id               Int       @id @default(autoincrement())
-    title            String?
+    title            String
     companyName      String?
     companyLink      String?
     jobType          String?
@@ -20,11 +20,10 @@ model ScrapedJob {
     applyLink        String?
     applyBy          DateTime?
     postedAt         DateTime?
+    vector           Float[]   @default([])
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt
 
-    embedding Unsupported("vector(1536)") @map("embedding")
-
     @@index([createdAt])
-    @@map("scraped_jobs")
+    @@map("jobs")
 }

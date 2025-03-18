@@ -1,5 +1,5 @@
--- Vector Extension
-CREATE EXTENSION IF NOT EXISTS vector;
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "vector";
 
 -- CreateEnum
 CREATE TYPE "JobType" AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP');
@@ -15,23 +15,9 @@ CREATE TABLE "blacklisted_tokens" (
 );
 
 -- CreateTable
-CREATE TABLE "job_preferences" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "keywords" TEXT[],
-    "location" TEXT[],
-    "remote" BOOLEAN,
-    "jobTypes" "JobType"[],
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "job_preferences_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "scraped_jobs" (
+CREATE TABLE "jobs" (
     "id" SERIAL NOT NULL,
-    "title" TEXT,
+    "title" TEXT NOT NULL,
     "companyName" TEXT,
     "companyLink" TEXT,
     "jobType" TEXT,
@@ -51,10 +37,25 @@ CREATE TABLE "scraped_jobs" (
     "applyLink" TEXT,
     "applyBy" TIMESTAMP(3),
     "postedAt" TIMESTAMP(3),
+    "vector" DOUBLE PRECISION[] DEFAULT ARRAY[]::DOUBLE PRECISION[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "scraped_jobs_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "jobs_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "job_preferences" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "keywords" TEXT[],
+    "location" TEXT[],
+    "remote" BOOLEAN,
+    "jobTypes" "JobType"[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "job_preferences_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -89,10 +90,10 @@ CREATE UNIQUE INDEX "blacklisted_tokens_token_key" ON "blacklisted_tokens"("toke
 CREATE INDEX "blacklisted_tokens_expiresAt_idx" ON "blacklisted_tokens"("expiresAt");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "job_preferences_userId_key" ON "job_preferences"("userId");
+CREATE INDEX "jobs_createdAt_idx" ON "jobs"("createdAt");
 
 -- CreateIndex
-CREATE INDEX "scraped_jobs_createdAt_idx" ON "scraped_jobs"("createdAt");
+CREATE UNIQUE INDEX "job_preferences_userId_key" ON "job_preferences"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");

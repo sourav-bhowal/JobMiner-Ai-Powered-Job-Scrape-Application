@@ -1,26 +1,6 @@
-import prisma from "@repo/database/prisma";
+import { insertJobInDB } from "../lib/insertJobInDB.js";
 import { QUEUE_NAME } from "./producer.js";
 import { connectRabbitMQ } from "@repo/rabbitmq";
-import { Job } from "../types/job-type.js";
-
-// Process Jobs from RabbitMQ and save them to the database
-async function insertJobInDB(jobBatch: Job[]) {
-  try {
-    // If the jobBatch is empty, return
-    if (jobBatch.length === 0 || !jobBatch) {
-      console.log("No job to insert in DB");
-      return;
-    }
-    // Insert the job in the database
-    await prisma.scrapedJob.createMany({
-      data: jobBatch,
-      skipDuplicates: true,
-    });
-    console.log("Job inserted in DB");
-  } catch (error) {
-    console.error("Error inserting job in DB", error);
-  }
-}
 
 // Connect to RabbitMQ and consume jobs
 export const consumeJobsFromQueue = async () => {

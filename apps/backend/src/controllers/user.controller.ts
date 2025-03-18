@@ -384,7 +384,6 @@ export const deleteUser = asyncHandler(
       .json(new apiResponse(200, null, "User deleted successfully."));
   }
 );
-
 // Sign Out User Controller
 export const signOutUser = asyncHandler(
   async (request: Request, response: Response) => {
