@@ -21,7 +21,8 @@ export async function createJobEmbedding(jobData: Job[]) {
       model: "text-embedding-3-small", // Use the text-embedding-3-small model
       input: truncatedText, // Input text
     });
-    console.log("Job embedding created", embedding);
+    
+    console.log("Job embedding created.");
 
     // Return the embedding
     return embedding.data.map((item) => item.embedding);

@@ -5,7 +5,7 @@ import cron from "node-cron";
 export function startScrapedJobCleanup() {
     // Run every month
     cron.schedule("0 0 1 * *", async () => {
-      await prisma.scrapedJob.deleteMany({
+      await prisma.job.deleteMany({
         where: {
           createdAt: {
             lte: new Date(new Date().setMonth(new Date().getMonth() - 1)), // Delete jobs created more than a month ago
