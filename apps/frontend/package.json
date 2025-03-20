@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "@repo/ui": "*",
+    "dotenv": "^16.4.7",
     "next": "15.2.2",
-    "@repo/ui": "*"
+    "next-auth": "^5.0.0-beta.25",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "typescript": "^5",

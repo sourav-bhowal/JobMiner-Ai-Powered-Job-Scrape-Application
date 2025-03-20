@@ -30,7 +30,9 @@ export const authMiddleware = asyncHandler(
     }
 
     // Verify the token
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string, {
+      algorithms: ["HS256"],
+    });
 
     // If token is invalid, send a 401 response
     if (!decodedToken) {

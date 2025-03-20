@@ -110,8 +110,8 @@ export const signInUser = asyncHandler(
       throw new apiError(400, "Invalid credentials.");
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
+    // Generate JWT Access token
+    const accessToken = jwt.sign(
       {
         userId: user.id,
         email: user.email,
@@ -124,12 +124,34 @@ export const signInUser = asyncHandler(
       }
     );
 
+    // Generate JWT Refresh token
+    const refreshToken = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+      },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "30d",
+        algorithm: "HS256",
+      }
+    );
+
     // Set cookie
-    response.cookie("accessToken", token, {
+    response.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 604800000, // 7 days
+    });
+
+    // Set cookie
+    response.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 2592000000, // 30 days
     });
 
     // Send response
@@ -141,8 +163,8 @@ export const signInUser = asyncHandler(
             id: user.id,
             email: user.email,
             username: user.username,
+            accessToken,
           },
-          accessToken: token,
         },
         "User signed in successfully."
       )
@@ -417,5 +439,62 @@ export const signOutUser = asyncHandler(
     response
       .status(200)
       .json(new apiResponse(200, null, "User signed out successfully."));
+  }
+);
+
+// Refresh Token Controller
+export const refreshToken = asyncHandler(
+  async (request: Request, response: Response) => {
+    // Get the token from the headers or cookies
+    const token =
+      request.cookies.refreshToken ||
+      request.headers.authorization?.split(" ")[1];
+
+    // If token is not present, throw an error
+    if (!token) {
+      throw new apiError(400, "No token provided.");
+    }
+
+    // Check if token is blacklisted
+    const blacklistedToken = await prisma.blacklistedToken.findFirst({
+      where: { token },
+    });
+
+    // If token is blacklisted, throw an error
+    if (blacklistedToken) {
+      throw new apiError(400, "Token is blacklisted.");
+    }
+
+    // Verify the token
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string, {
+      algorithms: ["HS256"],
+    }) as CustomUser;
+
+    // Generate JWT Access token
+    const accessToken = jwt.sign(
+      {
+        userId: decodedToken.id,
+        email: decodedToken.email,
+        username: decodedToken.username,
+      },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "7d",
+        algorithm: "HS256",
+      }
+    );
+
+    // Set cookie
+    response.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 604800000, // 7 days
+    });
+
+    // Send response
+    response
+      .status(200)
+      .json(new apiResponse(200, { accessToken }, "Token refreshed."));
   }
 );

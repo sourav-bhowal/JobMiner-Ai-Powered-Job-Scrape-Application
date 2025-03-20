@@ -9,6 +9,7 @@ import {
   getUserProfile,
   updateUserJobPreferences,
   signOutUser,
+  refreshToken,
 } from "../controllers/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
@@ -40,6 +41,9 @@ userRouter.post(
 
 // POST /api/user/signout
 userRouter.post("/signout", authMiddleware, signOutUser);
+
+// POST /api/user/refresh-token
+userRouter.post("/refresh-token", refreshToken);
 
 // Export the router
 export default userRouter;
