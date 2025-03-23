@@ -5,11 +5,13 @@ export const resetPasswordSchema = z.object({
   oldPassword: z
     .string()
     .min(6, "Password must be at least 6 characters long")
-    .max(20, "Password must be at most 20 characters long"),
+    .max(20, "Password must be at most 20 characters long")
+    .trim(),
   newPassword: z
     .string()
     .min(6, "Password must be at least 6 characters long")
-    .max(20, "Password must be at most 20 characters long"),
+    .max(20, "Password must be at most 20 characters long")
+    .trim(),
 });
 
 // Type of Reset password schema
@@ -20,11 +22,18 @@ export const updateUserSchema = z.object({
   firstName: z
     .string()
     .min(2, "First name must be at least 2 characters long")
-    .max(20, "First name must be at most 20 characters long"),
+    .max(20, "First name must be at most 20 characters long")
+    .trim(),
   lastName: z
     .string()
     .min(2, "Last name must be at least 2 characters long")
-    .max(20, "Last name must be at most 20 characters long"),
+    .max(20, "Last name must be at most 20 characters long")
+    .trim(),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters long")
+    .max(20, "Username must be at most 20 characters long")
+    .trim(),
   bio: z.string().max(100, "Bio must be at most 100 characters long"),
   city: z.string().max(50, "City must be at most 50 characters long"),
   state: z.string().max(50, "State must be at most 50 characters long"),

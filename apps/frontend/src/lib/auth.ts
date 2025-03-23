@@ -76,7 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/signin",
   },
   secret: config.AUTH_SECRET,
 });

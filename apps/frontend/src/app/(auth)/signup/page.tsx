@@ -1,3 +1,4 @@
+// Sign Up Page
 export default function SignUpPage() {
-  return <div>SignUpPage</div>;
+  return <main>SignUpPage</main>;
 }

@@ -8,8 +8,8 @@ model User {
     emailVerified Boolean @default(false)
 
     // Profile
-    firstName String?
-    lastName  String?
+    firstName String
+    lastName  String
     avatar    String?
     bio       String?
     city      String?

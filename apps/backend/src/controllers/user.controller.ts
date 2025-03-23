@@ -26,7 +26,7 @@ export const signUpUser = asyncHandler(
     }
 
     // Destructure request body
-    const { username, email, password } = data;
+    const { username, email, password, firstName, lastName } = data;
 
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
@@ -52,6 +52,8 @@ export const signUpUser = asyncHandler(
         username,
         email,
         password: hashedPassword,
+        firstName,
+        lastName,
       },
     });
 
