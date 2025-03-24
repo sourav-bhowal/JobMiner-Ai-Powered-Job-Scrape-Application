@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import HeroTiles from "./HeroTiles";
 
 // Hero Section
 export default function Hero() {
@@ -45,20 +46,7 @@ export default function Hero() {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div className="rounded-lg bg-neutral-900 p-8 backdrop-blur-sm">
-            <div className="text-5xl font-bold text-primary">97%</div>
-            <div className="mt-2 text-lg">Match Accuracy</div>
-          </div>
-          <div className="rounded-lg bg-neutral-900 p-8 backdrop-blur-sm">
-            <div className="text-5xl font-bold text-primary">10,000+</div>
-            <div className="mt-2 text-lg">Jobs Daily</div>
-          </div>
-          <div className="rounded-lg bg-neutral-900 p-8 backdrop-blur-sm">
-            <div className="text-5xl font-bold text-primary">5x</div>
-            <div className="mt-2 text-lg">Faster Matches</div>
-          </div>
-        </div>
+        <HeroTiles />
       </div>
 
       {/* Down arrow */}

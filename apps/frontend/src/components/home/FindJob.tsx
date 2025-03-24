@@ -30,7 +30,7 @@ export default function JobSearchForm() {
   // State for loading
   const [isSearching, setIsSearching] = useState(false);
 
-  // Form state
+  // Form
   const form = useForm<JobSearchFormValues>({
     resolver: zodResolver(jobSearchSchema),
     defaultValues: {
@@ -43,7 +43,7 @@ export default function JobSearchForm() {
   });
 
   // Handle submit
-  function onSubmit(values: JobSearchFormValues) {
+  async function onSubmit(values: JobSearchFormValues) {
     if (form.formState.isValid) {
       setIsSearching(true);
       setTimeout(() => {
@@ -52,6 +52,19 @@ export default function JobSearchForm() {
     }
 
     console.log(values);
+
+    // Set the values in the URL query string
+    const searchParams = new URLSearchParams();
+    if (values.jobTitle) searchParams.set("jobTitle", values.jobTitle);
+    if (values.location) searchParams.set("location", values.location);
+    if (values.jobType) searchParams.set("jobType", values.jobType);
+    if (values.showAiMatches)
+      searchParams.set("showAiMatches", values.showAiMatches.toString());
+    if (values.skills && values.skills.length > 0)
+      searchParams.set("skills", values.skills.join(","));
+
+    // Push the new URL to the browser history
+    window.history.pushState({}, "", `?${searchParams.toString()}`);
   }
 
   // Render the form
@@ -78,7 +91,7 @@ export default function JobSearchForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Job Title</FormLabel>
-                    <div className="relative">
+                    <div className="relative focus-within:scale-105 transition-all ease-in-out duration-300">
                       <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
                       <FormControl>
                         <Input
@@ -99,7 +112,7 @@ export default function JobSearchForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Location</FormLabel>
-                    <div className="relative">
+                    <div className="relative focus-within:scale-105 transition-all ease-in-out duration-300">
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
                       <FormControl>
                         <Input
@@ -152,7 +165,7 @@ export default function JobSearchForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Skills</FormLabel>
-                    <div className="relative">
+                    <div className="relative focus-within:scale-105 transition-all ease-in-out duration-300">
                       <Code className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
                       <FormControl>
                         <Input
