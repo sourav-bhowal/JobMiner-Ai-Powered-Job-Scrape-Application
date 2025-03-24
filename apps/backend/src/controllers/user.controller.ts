@@ -6,12 +6,15 @@ import asyncHandler from "../utils/asyncHandler.js";
 import apiResponse from "../utils/apiResponse.js";
 import apiError from "../utils/apiError.js";
 import prisma from "@repo/database/prisma";
-import { signInSchema, signUpSchema } from "@repo/validations/auth-validation";
+import {
+  signInSchema,
+  signUpSchema,
+} from "@repo/validations/src/auth-validation";
 import {
   resetPasswordSchema,
   updateUserSchema,
-} from "@repo/validations/user-validation";
-import { updateJobPreferencesSchema } from "@repo/validations/job-preference-validation";
+} from "@repo/validations/src/user-validation";
+import { updateJobPreferencesSchema } from "@repo/validations/src/job-preference-validation";
 import { sendWelcomeEmail } from "@repo/email";
 
 // Sign Up Controller

@@ -32,7 +32,7 @@ export default function Hero() {
         <div className="mb-16 flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-x-6 sm:space-y-0">
           <Link
             href="#"
-            className="w-64 rounded-md bg-primary px-8 py-4 font-semibold text-black shadow-md hover:shadow-primary transition-shadow duration-500 ease-in-out"
+            className="w-64 rounded-md bg-primary px-8 py-4 font-semibold text-black shadow-md hover:shadow-primary duration-500 hover:scale-105 transition-all ease-in-out"
           >
             Find Your Job Now
           </Link>

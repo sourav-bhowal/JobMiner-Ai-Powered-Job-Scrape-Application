@@ -4,9 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./auth-validation": "./src/auth-validation.ts",
-    "./user-validation": "./src/user-validation.ts",
-    "./job-preference-validation": "./src/job-preference-validation.ts"
+    "./src/*": "./src/*.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
