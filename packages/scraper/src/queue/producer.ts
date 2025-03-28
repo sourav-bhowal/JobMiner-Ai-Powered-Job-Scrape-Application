@@ -5,7 +5,7 @@ import { Job } from "../types/job-type.js";
 export const QUEUE_NAME = "jobQueue";
 
 // BATCH_SIZE: Number of jobs to send to the queue
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 20;
 
 // Producer function to send jobs to the queue
 export const sendJobsToQueue = async (jobs: Job[]): Promise<void> => {

@@ -8,7 +8,7 @@ export async function createJobEmbedding(jobData: Job[]) {
     (job) =>
       `Job Title: ${job.title}` +
       `Job Description: ${job.description}` +
-      `Required Skills: ${job.skills?.join(", ") ?? ""}` +
+      // `Required Skills: ${job.skills?.join(", ") ?? ""}` +
       `Job Type: ${job.jobType ?? ""}`
   );
 

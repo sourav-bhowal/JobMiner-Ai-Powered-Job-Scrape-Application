@@ -12,7 +12,7 @@ export async function insertJobInDB(jobBatch: Job[]) {
     }
 
     // Get the vector embeddings for the job
-    const jobEmbeddings = await createJobEmbedding(jobBatch);
+    // const jobEmbeddings = await createJobEmbedding(jobBatch);
 
     // Prepare data for createMany
     const jobsToInsert = jobBatch.map((job, index) => ({
@@ -36,7 +36,7 @@ export async function insertJobInDB(jobBatch: Job[]) {
       applyLink: job.applyLink,
       applyBy: job.applyBy,
       postedAt: job.postedAt,
-      vector: jobEmbeddings[index], // Store the corresponding vector embedding
+      // vector: jobEmbeddings[index], // Store the corresponding vector embedding
     }));
 
     // Insert all jobs into the database

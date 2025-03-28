@@ -1,126 +1,158 @@
-// INTERNSALA SCRAPER
-import puppeteer from "puppeteer";
-import { openai } from "@repo/openai";
-import { chunkText } from "../lib/chunkText.js";
+import puppeteer, { Browser, Page } from "puppeteer";
+import { sendJobsToQueue } from "../queue/producer.js";
+import { Job } from "../types/job-type.js";
 
-// JUST A DUMMY PRACTICE FUNCTION //
-export const internshalaJobScraper = async () => {
-  // Internshala job search URL
-  const JOB_SEARCH_URL = "https://internshala.com/jobs/web-development-jobs/";
+// Function to scrape jobs from Internshala
+export const internshalaJobScraper = async (): Promise<void> => {
+  // Base URL for Internshala jobs
+  const BASE_URL = "https://internshala.com/jobs/web-development-jobs";
 
-  // Launch Puppeteer browser
-  const browser = await puppeteer.launch({
-    headless: false, // set to true for production
-    args: ["--no-sandbox", "--disable-setuid-sandbox"], // args required for running Puppeteer in a Docker container
+  // Launch a new browser and open a new page
+  const browser: Browser = await puppeteer.launch({
+    headless: false,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
-  // Create a new page
-  const page = await browser.newPage();
+  // Open a new page
+  const page: Page = await browser.newPage();
 
-  try {
-    // Go to the job search URL
-    await page.goto(JOB_SEARCH_URL, {
-      waitUntil: "networkidle2", // wait until there are no more than 2 network connections for at least 500ms
-      timeout: 60000, // 60s timeout
+  // Go to the Internshala jobs page
+  await page.goto(BASE_URL, {
+    waitUntil: "domcontentloaded",
+  });
+
+  // Array to store all the jobs
+  let allJobs: Job[] = [];
+
+  // Function to auto scroll the page
+  const autoScroll = async (): Promise<void> => {
+    await page.evaluate(async () => {
+      await new Promise<void>((resolve) => {
+        let totalHeight = 0;
+        const distance = 500;
+        const timer = setInterval(() => {
+          let scrollHeightBefore = document.body.scrollHeight;
+          window.scrollBy(0, distance);
+          totalHeight += distance;
+
+          if (totalHeight >= scrollHeightBefore) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, 500);
+      });
+    });
+  };
+
+  // Function to extract the jobs from the page
+  const extractJobs = async (): Promise<Job[]> => {
+    return await page.evaluate(() => {
+      return Array.from(
+        document.querySelectorAll(".individual_internship")
+      ).map((jobElement) => ({
+        title:
+          jobElement.querySelector(".job-title-href")?.textContent?.trim() ||
+          "",
+        company:
+          jobElement.querySelector(".company-name")?.textContent?.trim() || "",
+        location:
+          jobElement.querySelector(".locations span a")?.textContent?.trim() ||
+          "",
+        experience:
+          jobElement
+            .querySelector(".row-1-item:nth-child(2) span")
+            ?.textContent?.trim() || "",
+        salary:
+          jobElement
+            .querySelector(".ic-16-money + span")
+            ?.textContent?.trim() || "",
+        jobType:
+          jobElement.querySelector(".status-li span")?.textContent?.trim() ||
+          "",
+        logo:
+          jobElement
+            .querySelector(".internship_logo img")
+            ?.getAttribute("src") || "",
+        jobLink:
+          jobElement.querySelector(".job-title-href")?.getAttribute("href") ||
+          "",
+      })) as Job[];
+    });
+  };
+
+  // Function to get the job details for a job
+  const getJobDetails = async (jobUrl: string): Promise<Partial<Job>> => {
+    const jobPage: Page = await browser.newPage();
+    await jobPage.goto(`https://internshala.com${jobUrl}`, {
+      waitUntil: "domcontentloaded",
     });
 
-    // Advanced scrolling system
-    let lastHeight = 0; // Initial height
-    let sameHeightCount = 0; // Counter for the number of times the height remains the same
-    let scrollAttempt = 0; // Counter for the number of scroll attempts
-    const MAX_SCROLL_ATTEMPTS = 50; // Maximum number of scroll attempts
+    const jobDetails: Partial<Job> = await jobPage.evaluate(() => {
+      return {
+        description:
+          document.querySelector(".text-container")?.textContent?.trim() || "",
+        skills: Array.from(
+          document.querySelectorAll(".round_tabs_container .round_tabs")
+        ).map((el) => el.textContent?.trim() || ""),
+      };
+    });
 
-    // Scroll until the bottom of the page or maximum scroll attempts
-    while (scrollAttempt < MAX_SCROLL_ATTEMPTS) {
-      // Random scroll distance and delay
-      const scrollBy = Math.floor(Math.random() * 400) + 300; // 300-700px
-      // Page evaluation to scroll smoothly
-      await page.evaluate((scrollBy) => {
-        window.scrollBy({ top: scrollBy, behavior: "smooth" }); // scroll smoothly by scrollBy pixels
-      }, scrollBy);
+    await jobPage.close();
+    return jobDetails;
+  };
 
-      // Random wait with network idle check
-      await Promise.race([
-        // race between the two promises
-        page.waitForNetworkIdle({ idleTime: 1000 }), // wait for 1s of network inactivity
-        new Promise(
-          (resolve) => setTimeout(resolve, Math.random() * 3000 + 2000) // resolve after 2-5s
-        ),
-      ]);
+  // Get the total number of pages
+  let totalPages: number = await page.evaluate(() => {
+    return parseInt(
+      document.querySelector("#total_pages")?.textContent?.trim() || "1",
+      10
+    );
+  });
 
-      // Height check logic
-      const newHeight = await page.evaluate(() => document.body.scrollHeight); // get the new height
-      // If the height remains the same for more than 3 times, break the loop
-      if (newHeight === lastHeight) {
-        sameHeightCount++; // increment the counter
-        if (sameHeightCount > 3) break; // break if the counter exceeds 3
-      } else {
-        // reset the counter if the height changes
-        sameHeightCount = 0;
-        lastHeight = newHeight; // update the last height
+  console.log(`Total Pages: ${totalPages}`);
+
+  // Loop through the pages and extract the jobs
+  for (
+    let currentPage = 1;
+    currentPage <= Math.min(2, totalPages);
+    currentPage++
+  ) {
+    await autoScroll();
+
+    let jobsOnPage: Job[] = await extractJobs();
+
+    // Get the job details for each job on the page and add it to the allJobs array
+    for (let job of jobsOnPage) {
+      if (job.jobLink) {
+        console.log(`Fetching details for: ${job.title}`);
+        let extraDetails = await getJobDetails(job.jobLink);
+        job = { ...job, ...extraDetails };
       }
-
-      // Bottom detection with 100px threshold
-      const atBottom = await page.evaluate(
-        () =>
-          window.scrollY + window.innerHeight >=
-          document.body.scrollHeight - 100
-      );
-      if (atBottom) break;
-
-      // Increment the scroll attempt
-      scrollAttempt++;
-
-      // Evaluate the body content
-      const body = await page.evaluate(() => document.body.innerHTML);
-
-      // Chunk the scraped job listings before sending to OpenAI
-      const chunks = chunkText(body, 9000);
-
-      // Send each chunk to OpenAI for completion
-      for (const [index, chunk] of chunks.entries()) {
-        console.log(`Sending chunk ${index + 1} of ${chunks.length}`);
-
-        // Get the response from OpenAI API
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "user",
-              content: `
-                      I am looking for a web development internship. Here are some job listings:
-                      ${chunk} 
-                      Scrape these job listings and provide a JSON summary with the following format:
-                      {
-                        job_id: [job_id],
-                        title: [job_title],
-                        company: { name: [company_name], url: [company_url] },
-                        location: { city: [city], state: [state], country: [country], remote: [true/false] },
-                        job_type: [job_type],
-                        salary: { min: [min_salary], max: [max_salary], currency: [currency], frequency: [salary_frequency] },
-                        posted_date: [posted_date],
-                        deadline_date: [deadline_date],
-                        description: [job_description],
-                        responsibilities: [ [responsibility_1], [responsibility_2], ... ],
-                        requirements: [ [requirement_1], [requirement_2], ... ],
-                        benefits: [ [benefit_1], [benefit_2], ... ],
-                        application: { url: [application_url] },
-                        source: { website: [website_name], scraped_url: [scraped_url], scraped_date: [scraped_date] }
-                      }
-                    `,
-            },
-          ],
-        });
-
-        console.log(response?.choices[0]?.message.content);
-      }
+      allJobs.push(job);
     }
-  } catch (error) {
-    // Log and return empty array in case of error
-    console.error("Scraping error:", error);
-    return [];
-  } finally {
-    // Close the browser
-    await browser.close();
+
+    console.log(
+      `Scraped Page ${currentPage}/${totalPages}, Total Jobs: ${allJobs.length}`
+    );
+
+    let isLastPage: boolean = await page.evaluate(
+      () => document.querySelector("#isLastPage")?.getAttribute("value") === "1"
+    );
+    if (isLastPage) break;
+
+    let nextButton = await page.$("#next");
+    if (nextButton) {
+      await nextButton.click();
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    } else {
+      break;
+    }
   }
+
+  console.log(`Total Jobs: ${allJobs.length}`);
+
+  // Send the jobs to the RabbitMQ queue
+  await sendJobsToQueue(allJobs);
+
+  await browser.close();
 };

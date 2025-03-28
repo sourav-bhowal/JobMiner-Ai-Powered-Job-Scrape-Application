@@ -30,7 +30,7 @@ export default function JobSearchForm() {
   // State for loading
   const [isSearching, setIsSearching] = useState(false);
 
-  // Form
+  // Form for Job Search
   const form = useForm<JobSearchFormValues>({
     resolver: zodResolver(jobSearchSchema),
     defaultValues: {

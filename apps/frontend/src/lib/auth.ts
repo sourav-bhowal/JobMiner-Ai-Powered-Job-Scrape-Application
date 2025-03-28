@@ -42,8 +42,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             throw new Error("Invalid credentials");
           }
 
-          // Return the user object
-          const { user } = await response.json();
+          // Parse the response
+          const res = await response.json();
+
+          // Return the user
+          const user = res.data.user;
 
           return user;
         } catch (error) {
@@ -55,18 +58,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.user.id = user.id;
-        token.user.username = user.username;
-        token.user.email = user.email;
-        token.user.accessToken = user.accessToken;
+        token.id = user.id;
+        token.username = user.username;
+        token.email = user.email;
+        token.accessToken = user.accessToken;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.user.id as string;
-      session.user.username = token.user.username;
-      session.user.email = token.user.email as string;
-      session.user.accessToken = token.user.accessToken;
+      session.user.id = token.id;
+      session.user.username = token.username;
+      session.user.email = token.email;
+      session.user.accessToken = token.accessToken;
 
       return session;
     },

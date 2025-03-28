@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRouter from "./src/routes/user.routes.js";
 import { startBlacklistTokenCleanup } from "./src/utils/cronJob.js";
-import { startScrapedJobCleanup } from "@repo/scraper";
+import { startScrapedJobCleanup, startScrapingJobs } from "@repo/scraper";
 
 // Create a new express application
 const app: Application = express();
@@ -15,6 +15,9 @@ if (process.env.NODE_ENV === "production") {
   startScrapedJobCleanup();
 }
 
+// Start scraping jobs
+startScrapingJobs();
+
 // Port to listen on
 const PORT = process.env.PORT;
 
@@ -22,6 +25,7 @@ const PORT = process.env.PORT;
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
+    credentials: true,
   })
 );
 
@@ -35,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Add the user router
-app.use("/api/user", userRouter);
+app.use("/user", userRouter);
 
 // Listen on the specified port
 app.listen(PORT, () => {

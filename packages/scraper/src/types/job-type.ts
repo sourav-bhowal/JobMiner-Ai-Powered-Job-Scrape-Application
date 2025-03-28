@@ -20,4 +20,12 @@ export interface Job {
   applyLink?: string;
   applyBy?: Date;
   postedAt?: Date;
+
+  company: string;
+  experience: string;
+  salary: string;
+  postedTime: string;
+  logo: string;
+  jobLink: string;
+  openings?: string;
 }

@@ -4,6 +4,8 @@ dotenv.config({
 });
 
 export const config = {
-  HTTP_BACKEND_URL: process.env.HTTP_BACKEND_URL!,
-  AUTH_SECRET: process.env.AUTH_SECRET!,
+  NEXT_PUBLIC_HTTP_BACKEND_URL: process.env.NEXT_PUBLIC_HTTP_BACKEND_URL,
+  HTTP_BACKEND_URL: process.env.HTTP_BACKEND_URL,
+  AUTH_SECRET: process.env.AUTH_SECRET,
+  AUTH_URL: process.env.AUTH_URL,
 };
